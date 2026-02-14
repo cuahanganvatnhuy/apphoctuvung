@@ -18,15 +18,9 @@ import AddEssay from './pages/Essay/AddEssay';
 import EssayDetail from './pages/Essay/EssayDetail';
 import EditEssay from './pages/Essay/EditEssay';
 
-const Home = () => (
-  <div className="home-page">
-    <div className="container">
-      <h1>Chào mừng đến với Volaloba</h1>
-      <p>Ứng dụng học từ vựng tiếng Anh hiệu quả</p>
-    </div>
-  </div>
-);
+// Home component đã được xóa vì không sử dụng
 
+// SliderNavigation component đã được xóa vì không sử dụng
 const SliderNavigation = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(0);
