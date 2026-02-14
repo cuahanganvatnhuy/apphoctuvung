@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { VocabularyProvider } from './context/VocabularyContext';
 import './App.css';
 
@@ -48,7 +48,7 @@ const SliderNavigation = () => {
     } else if (location.pathname === '/') {
       setActiveTab(-1); // Home page
     }
-  }, [location.pathname]);
+  }, [location.pathname, tabs]);
 
   const updateIndicator = (tabIndex) => {
     const navLinks = document.querySelectorAll('.nav-links a');

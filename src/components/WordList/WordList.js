@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVocabulary } from '../../context/VocabularyContext';
-import { FaSearch, FaEdit, FaTrash, FaPlus, FaFilter, FaCheck, FaPause } from 'react-icons/fa';
+import { FaSearch, FaEdit, FaTrash, FaPlus, FaCheck, FaPause } from 'react-icons/fa';
 import './WordList.css';
 
 const WordList = () => {
