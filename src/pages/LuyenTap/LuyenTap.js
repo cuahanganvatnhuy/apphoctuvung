@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaCheck, FaTimes, FaArrowRight, FaBook, FaList } from 'react-icons/fa';
 import { useVocabulary } from '../../context/VocabularyContext';
 import { useNavigate } from 'react-router-dom';
@@ -60,14 +60,7 @@ const LuyenTap = () => {
     return filtered;
   };
 
-  const layTuNgauNhien = () => {
-    const filteredWords = getFilteredWords();
-    if (filteredWords.length === 0) return null;
-    const randomIndex = Math.floor(Math.random() * filteredWords.length);
-    return filteredWords[randomIndex];
-  };
-
-  const chuyenTuTiepTheo = () => {
+  const chuyenTuTiepTheo = useCallback(() => {
     const filteredWords = getFilteredWords();
     
     // Get words that haven't been practiced yet
@@ -85,7 +78,7 @@ const LuyenTap = () => {
     setCauTraLoi('');
     setKetQua(null);
     setGoiY(false);
-  };
+  }, [getFilteredWords, practicedWords]);
 
   useEffect(() => {
     if (words.length > 0 && !tuHienTai) {
