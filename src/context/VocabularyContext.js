@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { ref, onValue, off, remove, query, orderByChild } from 'firebase/database';
+import { ref, onValue, off, remove, query, orderByChild, update } from 'firebase/database';
 import { database } from '../firebase';
 const VocabularyContext = createContext();
 
@@ -55,6 +55,25 @@ export const VocabularyProvider = ({ children }) => {
     }
   };
 
+  const updateWordStatus = async (id, newStatus) => {
+    try {
+      // Update the database
+      await update(ref(database, `words/${id}`), { status: newStatus });
+      
+      // Also update the local state immediately for better UX
+      setWords(prevWords => 
+        prevWords.map(word => 
+          word.id === id ? { ...word, status: newStatus } : word
+        )
+      );
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating word status:', error);
+      throw new Error('Không thể cập nhật trạng thái từ. Vui lòng thử lại.');
+    }
+  };
+
   const getRandomWords = (count = 10) => {
     if (words.length <= count) return [...words];
     
@@ -62,11 +81,32 @@ export const VocabularyProvider = ({ children }) => {
     return shuffled.slice(0, count);
   };
 
+  const updateWord = async (id, updatedFields) => {
+    try {
+      // Update the database
+      await update(ref(database, `words/${id}`), updatedFields);
+      
+      // Also update the local state immediately for better UX
+      setWords(prevWords => 
+        prevWords.map(word => 
+          word.id === id ? { ...word, ...updatedFields } : word
+        )
+      );
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating word:', error);
+      throw new Error('Không thể cập nhật từ. Vui lòng thử lại.');
+    }
+  };
+
   return (
     <VocabularyContext.Provider value={{ 
       words, 
       addWord, 
       deleteWord, 
+      updateWordStatus,
+      updateWord,
       getRandomWords,
       loading,
       error

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './LuyenTap.css';
 
 const LuyenTap = () => {
-  const { words } = useVocabulary();
+  const { words, updateWordStatus } = useVocabulary();
   const [tuHienTai, setTuHienTai] = useState(null);
   const [cauTraLoi, setCauTraLoi] = useState('');
   const [ketQua, setKetQua] = useState(null);
@@ -18,6 +18,19 @@ const LuyenTap = () => {
   const [practiceFinished, setPracticeFinished] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+
+  // Update word status to 'learned' when practice is completed
+  useEffect(() => {
+    if (practiceFinished && practicedWords.length > 0) {
+      // Update status for all practiced words
+      Promise.all(
+        practicedWords.map(wordId => 
+          updateWordStatus(wordId, 'learned')
+            .catch(error => console.error('Error updating word status:', error))
+        )
+      );
+    }
+  }, [practiceFinished, practicedWords, updateWordStatus]);
   
   // Toggle word selection
   const toggleWordSelection = (word) => {
@@ -63,22 +76,24 @@ const LuyenTap = () => {
   const chuyenTuTiepTheo = useCallback(() => {
     const filteredWords = getFilteredWords();
     
-    // Get words that haven't been practiced yet
-    const remainingWords = filteredWords.filter(word => !practicedWords.includes(word.id));
+    // Get words that are selected and haven't been practiced yet
+    const remainingWords = filteredWords.filter(word => 
+      selectedWords.includes(word.id) && !practicedWords.includes(word.id)
+    );
     
     if (remainingWords.length === 0) {
-      // If all words have been practiced, show completion screen
+      // If all selected words have been practiced, show completion screen
       setPracticeFinished(true);
       return;
     }
     
-    // Select a random word from remaining words
-    const randomIndex = Math.floor(Math.random() * remainingWords.length);
-    setTuHienTai(remainingWords[randomIndex]);
+    // Get the first word from the selected words that hasn't been practiced
+    const nextWord = remainingWords[0];
+    setTuHienTai(nextWord);
     setCauTraLoi('');
     setKetQua(null);
     setGoiY(false);
-  }, [getFilteredWords, practicedWords]);
+  }, [getFilteredWords, practicedWords, selectedWords]);
 
   useEffect(() => {
     if (words.length > 0 && !tuHienTai) {
