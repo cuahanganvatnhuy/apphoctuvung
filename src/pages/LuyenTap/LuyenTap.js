@@ -40,12 +40,12 @@ const LuyenTap = () => {
   };
   
   // Get filtered words based on selection and search term
-  const getFilteredWords = () => {
+  const getFilteredWords = useCallback(() => {
     let filtered = [...words];
     
-    // Apply search filter if search term exists
-    if (searchTerm && searchTerm.trim()) {
-      const term = searchTerm.toLowerCase().trim();
+    // Apply search filter
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
       filtered = filtered.filter(word => 
         word.word.toLowerCase().includes(term) || 
         word.meaning.toLowerCase().includes(term)
@@ -58,7 +58,7 @@ const LuyenTap = () => {
     }
     
     return filtered;
-  };
+  }, [words, searchTerm, selectingWords, selectedWords]);
 
   const chuyenTuTiepTheo = useCallback(() => {
     const filteredWords = getFilteredWords();
