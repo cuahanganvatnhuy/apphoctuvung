@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaCheck, FaTimes, FaArrowRight, FaBook, FaInfoCircle, FaList, FaCheckCircle } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaArrowRight, FaBook, FaList } from 'react-icons/fa';
 import { useVocabulary } from '../../context/VocabularyContext';
 import { useNavigate } from 'react-router-dom';
 import './LuyenTap.css';
@@ -91,7 +91,7 @@ const LuyenTap = () => {
     if (words.length > 0 && !tuHienTai) {
       chuyenTuTiepTheo();
     }
-  }, [words]);
+  }, [words, tuHienTai, chuyenTuTiepTheo]);
 
   const kiemTraDapAn = () => {
     if (!tuHienTai || !cauTraLoi.trim()) return;

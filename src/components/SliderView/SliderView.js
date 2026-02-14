@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useVocabulary } from '../../context/VocabularyContext';
 import './SliderView.css';
 
