@@ -55,7 +55,7 @@ const WordList = () => {
           word.note?.toLowerCase() || '',
           getTypeName(word.type).toLowerCase()
         ].join(' ');
-        
+          
         // Remove diacritics from the searchable text
         const normalizedText = removeDiacritics(searchableText);
         

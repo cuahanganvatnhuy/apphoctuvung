@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBook, FaGraduationCap, FaList, FaPlus } from 'react-icons/fa';
+import { FaBook, FaGraduationCap, FaList, FaPlus, FaCheck, FaClock, FaPause } from 'react-icons/fa';
+import { useVocabulary } from '../../context/VocabularyContext';
 
 // Inline styles
 const styles = {
@@ -83,17 +84,74 @@ const styles = {
     borderRadius: '8px',
     border: '1px dashed #cbd5e0',
   },
+  activityItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '0.75rem 0',
+    borderBottom: '1px solid #edf2f7',
+  },
+  activityWord: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  activityMeaning: {
+    fontSize: '0.875rem',
+    color: '#718096',
+    marginTop: '0.25rem',
+  },
+  statusBadge: {
+    padding: '0.25rem 0.75rem',
+    borderRadius: '9999px',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  },
+  statusActive: {
+    backgroundColor: '#ebf8ff',
+    color: '#3182ce',
+  },
+  statusPaused: {
+    backgroundColor: '#fffaf0',
+    color: '#dd6b20',
+  },
+  statusLearned: {
+    backgroundColor: '#f0fff4',
+    color: '#38a169',
+  },
 };
 
 const Dashboard = () => {
-  const [hoveredCard, setHoveredCard] = React.useState(null);
-  
-  const stats = [
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [stats, setStats] = useState([
     { title: 'Tổng số từ', value: 0, icon: <FaBook />, link: '/list' },
-    { title: 'Học từ mới', value: 0, icon: <FaPlus />, link: '/add' },
-    { title: 'Luyện tập', value: 0, icon: <FaGraduationCap />, link: '/luyen-tap' },
-    { title: 'Kiểm tra', value: 0, icon: <FaGraduationCap />, link: '/quiz' },
-  ];
+    { title: 'Đang học', value: 0, icon: <FaClock />, link: '/list?status=active' },
+    { title: 'Tạm dừng', value: 0, icon: <FaPause />, link: '/list?status=paused' },
+    { title: 'Đã học', value: 0, icon: <FaCheck />, link: '/list?status=learned' },
+  ]);
+  
+  const { words } = useVocabulary();
+  
+  useEffect(() => {
+    if (words) {
+      const totalWords = words.length;
+      const activeWords = words.filter(word => word.status === 'active').length;
+      const pausedWords = words.filter(word => word.status === 'paused').length;
+      const learnedWords = words.filter(word => word.status === 'learned').length;
+      
+      setStats([
+        { ...stats[0], value: totalWords },
+        { ...stats[1], value: activeWords },
+        { ...stats[2], value: pausedWords },
+        { ...stats[3], value: learnedWords },
+      ]);
+    }
+  }, [words]);
+
+  const recentWords = words ? words
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+    .slice(0, 5) : [];
 
   return (
     <div style={styles.container}>
@@ -123,10 +181,31 @@ const Dashboard = () => {
       </div>
 
       <div style={styles.recentActivity}>
-        <h2 style={styles.recentActivityTitle}>Hoạt động gần đây</h2>
-        <div style={styles.activityEmpty}>
-          <p>Chưa có hoạt động nào gần đây</p>
-        </div>
+        <h2 style={styles.recentActivityTitle}>Từ vựng gần đây</h2>
+        {recentWords.length > 0 ? (
+          <div>
+            {recentWords.map((word, index) => (
+              <div key={index} style={styles.activityItem}>
+                <div style={styles.activityWord}>
+                  <strong>{word.word}</strong>
+                  <span style={styles.activityMeaning}>{word.meaning}</span>
+                </div>
+                <span style={{
+                  ...styles.statusBadge,
+                  ...(word.status === 'active' ? styles.statusActive : 
+                      word.status === 'paused' ? styles.statusPaused : styles.statusLearned)
+                }}>
+                  {word.status === 'active' ? 'Đang học' : 
+                   word.status === 'paused' ? 'Tạm dừng' : 'Đã học'}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={styles.activityEmpty}>
+            <p>Chưa có dữ liệu</p>
+          </div>
+        )}
       </div>
     </div>
   );
