@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBook, FaGraduationCap, FaPlus, FaCheck, FaClock, FaPause } from 'react-icons/fa';
+import { FaBook, FaCheck, FaClock, FaPause } from 'react-icons/fa';
 import { useVocabulary } from '../../context/VocabularyContext';
 
 // Inline styles
@@ -147,11 +147,11 @@ const DashboardNew = () => {
       const pausedWords = words.filter(word => word.status === 'paused').length;
       const learnedWords = words.filter(word => word.status === 'learned').length;
       
-      setStats([
-        { ...stats[0], value: totalWords },
-        { ...stats[1], value: activeWords },
-        { ...stats[2], value: pausedWords },
-        { ...stats[3], value: learnedWords },
+      setStats(currentStats => [
+        { ...currentStats[0], value: totalWords },
+        { ...currentStats[1], value: activeWords },
+        { ...currentStats[2], value: pausedWords },
+        { ...currentStats[3], value: learnedWords },
       ]);
     }
   }, [words]);
