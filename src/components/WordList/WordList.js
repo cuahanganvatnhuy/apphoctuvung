@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVocabulary } from '../../context/VocabularyContext';
-import { FaSearch, FaEdit, FaTrash, FaPlus, FaCheck, FaPause, FaTimes, FaSave } from 'react-icons/fa';
+import { FaSearch, FaEdit, FaTrash, FaPlus, FaCheck, FaPause, FaTimes, FaSave, FaVolumeUp } from 'react-icons/fa';
 import './WordList.css';
 
 // Function to remove Vietnamese diacritics
@@ -174,6 +174,40 @@ const WordList = () => {
     }));
   };
 
+  // Text-to-speech functions
+  const speakText = (text, language) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Set language based on selection
+      if (language === 'en') {
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+      } else if (language === 'vi') {
+        utterance.lang = 'vi-VN';
+        utterance.rate = 1.0;
+      }
+      
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert('Trình duyệt của bạn không hỗ trợ tính năng đọc văn bản.');
+    }
+  };
+
+  const handleSpeak = (word, language) => {
+    if (language === 'en') {
+      speakText(word.word || '', 'en');
+    } else if (language === 'vi') {
+      speakText(word.meaning || '', 'vi');
+    }
+  };
+
   return (
     <div className="word-list-page">
       <div className="container">
@@ -238,8 +272,14 @@ const WordList = () => {
               <thead>
                 <tr>
                   <th>STT</th>
-                  <th>Từ vựng</th>
-                  <th>Nghĩa</th>
+                  <th>
+                    Từ vựng
+                    <FaVolumeUp className="speaker-icon-header" style={{marginLeft: '5px', fontSize: '0.8em'}} />
+                  </th>
+                  <th>
+                    Nghĩa
+                    <FaVolumeUp className="speaker-icon-header" style={{marginLeft: '5px', fontSize: '0.8em'}} />
+                  </th>
                   <th>Loại từ</th>
                   <th>Ví dụ</th>
                   <th>Trạng thái</th>
@@ -272,13 +312,22 @@ const WordList = () => {
                           />
                         </div>
                       ) : (
-                        <div className="word-content">
-                          <div className="word-text">{word.word}</div>
-                          {word.note && (
-                            <div className="word-note">
-                              <small>{word.note}</small>
-                            </div>
-                          )}
+                        <div className="word-content-with-sound">
+                          <div className="word-content">
+                            <div className="word-text">{word.word}</div>
+                            {word.note && (
+                              <div className="word-note">
+                                <small>{word.note}</small>
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            className="speaker-btn"
+                            onClick={() => handleSpeak(word, 'en')}
+                            title="Đọc tiếng Anh"
+                          >
+                            <FaVolumeUp />
+                          </button>
                         </div>
                       )}
                     </td>
@@ -292,7 +341,16 @@ const WordList = () => {
                           className="edit-input"
                         />
                       ) : (
-                        word.meaning
+                        <div className="meaning-with-sound">
+                          <span>{word.meaning}</span>
+                          <button
+                            className="speaker-btn"
+                            onClick={() => handleSpeak(word, 'vi')}
+                            title="Đọc tiếng Việt"
+                          >
+                            <FaVolumeUp />
+                          </button>
+                        </div>
                       )}
                     </td>
                     <td>

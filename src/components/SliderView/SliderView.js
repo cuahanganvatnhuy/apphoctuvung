@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useVocabulary } from '../../context/VocabularyContext';
+import { FaVolumeUp, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import './SliderView.css';
 
 const SliderView = () => {
@@ -9,6 +10,40 @@ const SliderView = () => {
   const [showAnswer, setShowAnswer] = useState(false);
   
   const currentWord = words[currentIndex];
+  
+  // Text-to-speech functions
+  const speakText = (text, language) => {
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Set language based on selection
+      if (language === 'en') {
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+      } else if (language === 'vi') {
+        utterance.lang = 'vi-VN';
+        utterance.rate = 1.0;
+      }
+      
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert('Trình duyệt của bạn không hỗ trợ tính năng đọc văn bản.');
+    }
+  };
+
+  const handleSpeak = (language) => {
+    if (language === 'en' && currentWord) {
+      speakText(currentWord.word || '', 'en');
+    } else if (language === 'vi' && currentWord) {
+      speakText(currentWord.meaning || '', 'vi');
+    }
+  };
   
   const nextWord = () => {
     setShowAnswer(false);
@@ -53,7 +88,19 @@ const SliderView = () => {
         onClick={toggleFlip}
       >
         <div className="card-front">
-          <h2>{currentWord.word}</h2>
+          <div className="word-header">
+            <h2>{currentWord.word}</h2>
+            <button 
+              className="speaker-btn-slider"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSpeak('en');
+              }}
+              title="Đọc tiếng Anh"
+            >
+              <FaVolumeUp />
+            </button>
+          </div>
           <p className="type">{currentWord.type}</p>
           {currentWord.pronunciation && (
             <p className="pronunciation">/{currentWord.pronunciation}/</p>
@@ -63,7 +110,19 @@ const SliderView = () => {
           )}
         </div>
         <div className="card-back">
-          <h3>Nghĩa:</h3>
+          <div className="meaning-header">
+            <h3>Nghĩa:</h3>
+            <button 
+              className="speaker-btn-slider"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSpeak('vi');
+              }}
+              title="Đọc tiếng Việt"
+            >
+              <FaVolumeUp />
+            </button>
+          </div>
           <p>{currentWord.meaning}</p>
           {currentWord.example && (
             <div className="example">
@@ -76,10 +135,10 @@ const SliderView = () => {
       
       <div className="navigation-buttons">
         <button onClick={prevWord} className="nav-btn prev-btn">
-          <i className="fas fa-chevron-left"></i>
+          <FaChevronLeft />
         </button>
         <button onClick={nextWord} className="nav-btn next-btn">
-          <i className="fas fa-chevron-right"></i>
+          <FaChevronRight />
         </button>
       </div>
     </div>

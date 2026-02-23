@@ -756,3 +756,73 @@
 ::-webkit-scrollbar-corner {
   display: none;
 }
+
+/* Speaker Button Styles */
+.speaker-icon-header {
+  color: #6b7280;
+  opacity: 0.6;
+}
+
+.word-content-with-sound {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.meaning-with-sound {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.speaker-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.speaker-btn:hover {
+  background-color: #f3f4f6;
+  color: #3b82f6;
+  transform: scale(1.1);
+}
+
+.speaker-btn:active {
+  transform: scale(0.95);
+}
+
+.speaker-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .speaker-btn {
+    padding: 0.2rem;
+    font-size: 0.875rem;
+  }
+  
+  .word-content-with-sound,
+  .meaning-with-sound {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .speaker-btn {
+    align-self: flex-end;
+  }
+}
