@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useVocabulary } from '../../context/VocabularyContext';
-import { FaArrowLeft, FaVolumeUp, FaCheck, FaTimes, FaRedo } from 'react-icons/fa';
+import { FaArrowLeft, FaVolumeUp, FaCheck, FaTimes } from 'react-icons/fa';
 import './HocTuVung.css';
 
 const HocTuVung = () => {

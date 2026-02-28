@@ -31,13 +31,6 @@ const AddWord = () => {
     return Array.from(subjects).sort();
   };
 
-  // Function to remove Vietnamese diacritics for search
-  const removeDiacritics = (str) => {
-    return str
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd').replace(/Đ/g, 'D');
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -13,7 +13,6 @@ const LuyenTap = () => {
   const [cheDo, setCheDo] = useState('anhViet');
   const [goiY, setGoiY] = useState(false);
   const [daNghe, setDaNghe] = useState(false);
-  const [showCorrection, setShowCorrection] = useState(false);
   const [selectedWords, setSelectedWords] = useState([]);
   const [practicedWords, setPracticedWords] = useState([]);
   const [selectingWords, setSelectingWords] = useState(true);
@@ -27,8 +26,6 @@ const LuyenTap = () => {
   const [showVietnameseMeaning, setShowVietnameseMeaning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingResult, setRecordingResult] = useState(null);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
   const mediaRecorderRef = useRef(null);
   const navigate = useNavigate();
 
@@ -117,7 +114,6 @@ const LuyenTap = () => {
   };
 
   // Pagination navigation functions
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const nextPage = () => {
     const { totalPages } = getPaginationInfo();
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
@@ -145,7 +141,6 @@ const LuyenTap = () => {
     setKetQua(null);
     setGoiY(false);
     setDaNghe(false); // Reset listening state
-    setShowCorrection(false); // Reset correction state
   }, [getFilteredWords, practicedWords, selectedWords]);
 
   // Text-to-speech functions
@@ -224,7 +219,6 @@ const LuyenTap = () => {
       };
 
       mediaRecorderRef.current = recorder;
-      setAudioChunks(chunks);
       recorder.start();
       setIsRecording(true);
     } catch (error) {
@@ -346,7 +340,6 @@ const LuyenTap = () => {
           onClick={() => {
             setCauTraLoi('');
             setKetQua(null);
-            setShowCorrection(false);
           }}
         >
           Sửa lại câu trả lời
@@ -400,7 +393,7 @@ const LuyenTap = () => {
     
     // Show comparison for wrong answers in ngheViet or vietAnh modes
     if (!dung && (cheDo === 'ngheViet' || cheDo === 'vietAnh')) {
-      setShowCorrection(true);
+      // Comparison logic would go here
     }
   };
 

@@ -121,20 +121,6 @@ const WordList = () => {
     return Array.from(subjects).sort();
   };
 
-  // Get filtered subjects for search functionality
-  const getFilteredSubjects = () => {
-    const subjects = new Set();
-    words.forEach(word => {
-      if (word.subject && word.subject.trim()) {
-        const subject = word.subject.trim();
-        // Filter subjects based on search term
-        if (!subjectSearch || removeDiacritics(subject.toLowerCase()).includes(removeDiacritics(subjectSearch.toLowerCase()))) {
-          subjects.add(subject);
-        }
-      }
-    });
-    return Array.from(subjects).sort();
-  };
 
   // Calculate pagination
   const indexOfLastItem = currentPage * itemsPerPage;
