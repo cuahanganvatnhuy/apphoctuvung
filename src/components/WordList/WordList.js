@@ -15,6 +15,8 @@ const removeDiacritics = (str) => {
 const WordList = () => {
   const { words, deleteWord, updateWord } = useVocabulary();
   const [filter, setFilter] = useState('all');
+  const [subjectFilter, setSubjectFilter] = useState('all');
+  const [subjectSearch, setSubjectSearch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredWords, setFilteredWords] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,6 +43,22 @@ const WordList = () => {
       result = result.filter(word => word.status === filter);
     }
     
+    // Filter by subject
+    if (subjectFilter !== 'all') {
+      result = result.filter(word => word.subject === subjectFilter);
+    }
+    
+    // Filter by subject search term
+    if (subjectSearch.trim()) {
+      const searchTerm = removeDiacritics(subjectSearch.toLowerCase().trim());
+      result = result.filter(word => {
+        if (word.subject) {
+          return removeDiacritics(word.subject.toLowerCase()).includes(searchTerm);
+        }
+        return false;
+      });
+    }
+    
     // Search by word, meaning, example, or note (diacritic-insensitive)
     if (searchTerm) {
       const term = searchTerm.toLowerCase().trim();
@@ -53,7 +71,8 @@ const WordList = () => {
           word.meaning?.toLowerCase() || '',
           word.example?.toLowerCase() || '',
           word.note?.toLowerCase() || '',
-          getTypeName(word.type).toLowerCase()
+          getTypeName(word.type).toLowerCase(),
+          word.subject?.toLowerCase() || ''
         ].join(' ');
           
         // Remove diacritics from the searchable text
@@ -70,7 +89,7 @@ const WordList = () => {
     // Reset to first page when filters or search changes
     setCurrentPage(1);
     setFilteredWords(result);
-  }, [words, filter, searchTerm]);
+  }, [words, filter, subjectFilter, subjectSearch, searchTerm]);
 
   const handleDelete = (id, e) => {
     e.stopPropagation();
@@ -89,6 +108,32 @@ const WordList = () => {
       'other': 'Khác'
     };
     return types[type] || type;
+  };
+
+  // Get unique subjects from words (without search filtering for dropdown)
+  const getUniqueSubjects = () => {
+    const subjects = new Set();
+    words.forEach(word => {
+      if (word.subject && word.subject.trim()) {
+        subjects.add(word.subject.trim());
+      }
+    });
+    return Array.from(subjects).sort();
+  };
+
+  // Get filtered subjects for search functionality
+  const getFilteredSubjects = () => {
+    const subjects = new Set();
+    words.forEach(word => {
+      if (word.subject && word.subject.trim()) {
+        const subject = word.subject.trim();
+        // Filter subjects based on search term
+        if (!subjectSearch || removeDiacritics(subject.toLowerCase()).includes(removeDiacritics(subjectSearch.toLowerCase()))) {
+          subjects.add(subject);
+        }
+      }
+    });
+    return Array.from(subjects).sort();
   };
 
   // Calculate pagination
@@ -124,7 +169,7 @@ const WordList = () => {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filter, searchTerm]);
+  }, [filter, subjectFilter, subjectSearch, searchTerm]);
 
   // Start editing a word
   const startEditing = (word) => {
@@ -135,7 +180,8 @@ const WordList = () => {
       example: word.example || '',
       note: word.note || '',
       type: word.type || 'active',
-      status: word.status || 'active'
+      status: word.status || 'active',
+      subject: word.subject || ''
     });
   };
 
@@ -243,6 +289,32 @@ const WordList = () => {
           </div>
           
           <div className="filter-group">
+            <div className="subject-filter-container">
+              <div className="subject-search-box">
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm chủ đề..."
+                  value={subjectSearch}
+                  onChange={(e) => setSubjectSearch(e.target.value)}
+                  className="subject-search-input"
+                  aria-label="Tìm kiếm chủ đề"
+                />
+              </div>
+              <select 
+                value={subjectFilter} 
+                onChange={(e) => setSubjectFilter(e.target.value)}
+                className="filter-select"
+              >
+                <option value="all">Tất cả chủ đề</option>
+                {getUniqueSubjects().map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          <div className="filter-group">
             <select 
               value={filter} 
               onChange={(e) => setFilter(e.target.value)}
@@ -281,6 +353,7 @@ const WordList = () => {
                     <FaVolumeUp className="speaker-icon-header" style={{marginLeft: '5px', fontSize: '0.8em'}} />
                   </th>
                   <th>Loại từ</th>
+                  <th>Chủ đề</th>
                   <th>Ví dụ</th>
                   <th>Trạng thái</th>
                   <th>Thao tác</th>
@@ -371,6 +444,22 @@ const WordList = () => {
                       ) : (
                         <span className="status-badge">
                           {getTypeName(word.type)}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      {editingId === word.id ? (
+                        <input
+                          type="text"
+                          name="subject"
+                          value={editingWord.subject || ''}
+                          onChange={handleEditChange}
+                          className="edit-input"
+                          placeholder="Chủ đề..."
+                        />
+                      ) : (
+                        <span className="subject-badge">
+                          {word.subject || '-'}
                         </span>
                       )}
                     </td>

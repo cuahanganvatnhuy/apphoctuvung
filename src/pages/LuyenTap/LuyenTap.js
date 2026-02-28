@@ -19,6 +19,8 @@ const LuyenTap = () => {
   const [selectingWords, setSelectingWords] = useState(true);
   const [practiceFinished, setPracticeFinished] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
   
   // Pronunciation practice states
   const [phatAmMode, setPhatAmMode] = useState(false);
@@ -83,6 +85,44 @@ const LuyenTap = () => {
     
     return filtered;
   }, [words, searchTerm, selectingWords, selectedWords]);
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Get paginated words for display
+  const getPaginatedWords = () => {
+    const filtered = getFilteredWords();
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return filtered.slice(indexOfFirstItem, indexOfLastItem);
+  };
+
+  // Calculate pagination info
+  const getPaginationInfo = () => {
+    const filtered = getFilteredWords();
+    const totalPages = Math.ceil(filtered.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const startItem = filtered.length > 0 ? indexOfFirstItem + 1 : 0;
+    const endItem = Math.min(indexOfLastItem, filtered.length);
+    
+    return {
+      totalPages,
+      startItem,
+      endItem,
+      totalItems: filtered.length
+    };
+  };
+
+  // Pagination navigation functions
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const nextPage = () => {
+    const { totalPages } = getPaginationInfo();
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
+  const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
   const chuyenTuTiepTheo = useCallback(() => {
     const filteredWords = getFilteredWords();
@@ -560,26 +600,29 @@ const LuyenTap = () => {
             </div>
             
             <div className="bang-noi-dung">
-              {getFilteredWords().length > 0 ? (
-                getFilteredWords().map((word, index) => (
-                  <div 
-                    key={word.id} 
-                    className={`hang ${selectedWords.includes(word.id) ? 'da-chon' : ''}`}
-                    onClick={() => toggleWordSelection(word)}
-                  >
-                    <div className="cot cot-chon">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedWords.includes(word.id)}
-                        onChange={() => {}}
-                        onClick={(e) => e.stopPropagation()}
-                      />
+              {getPaginatedWords().length > 0 ? (
+                getPaginatedWords().map((word, index) => {
+                  const globalIndex = (currentPage - 1) * itemsPerPage + index;
+                  return (
+                    <div 
+                      key={word.id} 
+                      className={`hang ${selectedWords.includes(word.id) ? 'da-chon' : ''}`}
+                      onClick={() => toggleWordSelection(word)}
+                    >
+                      <div className="cot cot-chon">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedWords.includes(word.id)}
+                          onChange={() => {}}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      <div className="cot cot-stt">{globalIndex + 1}</div>
+                      <div className="cot cot-tu">{word.word}</div>
+                      <div className="cot cot-nghia">{word.meaning}</div>
                     </div>
-                    <div className="cot cot-stt">{index + 1}</div>
-                    <div className="cot cot-tu">{word.word}</div>
-                    <div className="cot cot-nghia">{word.meaning}</div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="khong-co-du-lieu">
                   Không có từ vựng nào để hiển thị
@@ -589,19 +632,31 @@ const LuyenTap = () => {
             
             <div className="bang-chan-trang">
               <div className="tong-so">
-                Tổng: {getFilteredWords().length} từ
+                Tổng: {getPaginationInfo().totalItems} từ
               </div>
               <div className="thong-tin-phan-trang">
                 {searchTerm ? (
-                  <span>Đã tìm thấy {getFilteredWords().length} kết quả</span>
+                  <span>Đã tìm thấy {getPaginationInfo().totalItems} kết quả</span>
                 ) : (
-                  <span>Hiển thị 1-{getFilteredWords().length} trên {words.length} từ</span>
+                  <span>Hiển thị {getPaginationInfo().startItem}-{getPaginationInfo().endItem} trên {words.length} từ</span>
                 )}
               </div>
               <div className="dieu-khien-phan-trang">
-                <button className="nut-phan-trang" disabled={true}>&lt;</button>
-                <span className="trang-hien-tai">1</span>
-                <button className="nut-phan-trang" disabled={true}>&gt;</button>
+                <button 
+                  className="nut-phan-trang" 
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                >
+                  &lt;
+                </button>
+                <span className="trang-hien-tai">{currentPage}</span>
+                <button 
+                  className="nut-phan-trang" 
+                  onClick={nextPage}
+                  disabled={currentPage === getPaginationInfo().totalPages}
+                >
+                  &gt;
+                </button>
               </div>
             </div>
             
@@ -656,6 +711,18 @@ const LuyenTap = () => {
                 disabled={selectedWords.length === 0}
               >
                 🎤 Luyện tập phát âm ({selectedWords.length} từ đã chọn)
+              </button>
+              <button 
+                className={`nut-hoc-tu-vung ${selectedWords.length === 0 ? 'bi-vo-hieu' : ''}`}
+                onClick={() => {
+                  if (selectedWords.length > 0) {
+                    // Navigate to learning page with selected words
+                    navigate('/hoc-tu-vung', { state: { selectedWords } });
+                  }
+                }}
+                disabled={selectedWords.length === 0}
+              >
+                📖 Học từ vựng ({selectedWords.length} từ đã chọn)
               </button>
             </div>
           </div>

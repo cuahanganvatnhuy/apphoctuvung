@@ -12,11 +12,32 @@ const AddWord = () => {
     meaning: '',
     type: 'noun',
     example: '',
-    note: ''
+    note: '',
+    subject: '',
+    customSubject: ''
   });
   const [message, setMessage] = useState({ text: '', type: '' });
-  const { addWord } = useVocabulary();
+  const { addWord, words } = useVocabulary();
   const navigate = useNavigate();
+
+  // Get unique subjects from existing words
+  const getUniqueSubjects = () => {
+    const subjects = new Set();
+    words.forEach(word => {
+      if (word.subject && word.subject.trim()) {
+        subjects.add(word.subject.trim());
+      }
+    });
+    return Array.from(subjects).sort();
+  };
+
+  // Function to remove Vietnamese diacritics for search
+  const removeDiacritics = (str) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,16 +58,38 @@ const AddWord = () => {
       return;
     }
 
+    if (!word.subject) {
+      setMessage({
+        text: 'Vui lòng chọn chủ đề',
+        type: 'error'
+      });
+      return;
+    }
+
+    if (word.subject === 'khác' && !word.customSubject.trim()) {
+      setMessage({
+        text: 'Vui lòng nhập chủ đề tùy chỉnh',
+        type: 'error'
+      });
+      return;
+    }
+
     try {
+      // Prepare word data with subject
+      const wordData = {
+        ...word,
+        subject: word.subject === 'khác' ? word.customSubject : word.subject
+      };
+      
       // Add to local state
-      addWord(word);
+      addWord(wordData);
       
       // Add to Firebase
       const wordsRef = ref(database, 'words');
       const newWordRef = push(wordsRef);
       
       await set(newWordRef, {
-        ...word,
+        ...wordData,
         createdAt: new Date().toISOString(),
         id: newWordRef.key
       });
@@ -62,7 +105,9 @@ const AddWord = () => {
         meaning: '',
         type: 'noun',
         example: '',
-        note: ''
+        note: '',
+        subject: '',
+        customSubject: ''
       });
       
       // Auto hide message after 3 seconds
@@ -156,6 +201,40 @@ const AddWord = () => {
           </div>
           
           <div className="form-group">
+            <div className="select-wrapper">
+              <select
+                id="subject"
+                name="subject"
+                value={word.subject}
+                onChange={handleChange}
+                className={word.subject ? 'has-value' : ''}
+              >
+                <option value="">Chọn chủ đề</option>
+                {getUniqueSubjects().map(subject => (
+                  <option key={subject} value={subject}>{subject}</option>
+                ))}
+                <option value="khác">Khác</option>
+              </select>
+              <span className="floating-label">Chủ đề</span>
+            </div>
+          </div>
+          
+          {word.subject === 'khác' && (
+            <div className="form-group">
+              <input
+                type="text"
+                id="customSubject"
+                name="customSubject"
+                value={word.customSubject}
+                onChange={handleChange}
+                placeholder=" "
+                className={word.customSubject ? 'has-value' : ''}
+              />
+              <span className="floating-label">Nhập chủ đề tùy chỉnh</span>
+            </div>
+          )}
+          
+          <div className="form-group">
             <textarea
               id="example"
               name="example"
@@ -193,7 +272,7 @@ const AddWord = () => {
             <button 
               type="submit" 
               className="btn btn-primary"
-              disabled={!word.word.trim() || !word.meaning.trim()}
+              disabled={!word.word.trim() || !word.meaning.trim() || !word.subject || (word.subject === 'khác' && !word.customSubject.trim())}
             >
               <FaSave className="mr-2" />
               Lưu từ

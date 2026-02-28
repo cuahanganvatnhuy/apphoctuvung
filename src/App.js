@@ -10,6 +10,7 @@ import Quiz from './components/Quiz/Quiz';
 import SliderView from './components/SliderView/SliderView';
 import Dashboard from './components/Dashboard/DashboardNew';
 import LuyenTap from './pages/LuyenTap/LuyenTap';
+import HocTuVung from './pages/HocTuVung/HocTuVung';
 import Sidebar from './components/Sidebar/Sidebar';
 
 // Import Essay components
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/slider" element={<SliderView />} />
                 <Route path="/quiz" element={<Quiz />} />
                 <Route path="/luyen-tap" element={<LuyenTap />} />
+                <Route path="/hoc-tu-vung" element={<HocTuVung />} />
                 
                 {/* Essay Management Routes */}
                 <Route path="/essays" element={<Essay />} />
