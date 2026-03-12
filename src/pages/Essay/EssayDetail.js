@@ -109,9 +109,7 @@ const EssayDetail = () => {
       </div>
       
       <div className="essay-content">
-        {essay.content.split('\n').map((paragraph, index) => (
-          <p key={index}>{paragraph || <br />}</p>
-        ))}
+        <div dangerouslySetInnerHTML={{ __html: essay.content }} />
       </div>
       
       <div className="essay-actions-bottom">

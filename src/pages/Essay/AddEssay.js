@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import essayApi from '../../api/essayApi';
 import './Essay.css';
+import './RichTextEditor.css';
 
 const AddEssay = () => {
   const navigate = useNavigate();
@@ -19,6 +22,37 @@ const AddEssay = () => {
       [name]: value
     });
   };
+
+  const handleContentChange = (value) => {
+    setEssay({
+      ...essay,
+      content: value
+    });
+  };
+
+  // Configure Quill editor modules
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'font': [] }],
+      [{ 'align': [] }],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+  };
+
+  const formats = [
+    'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'list', 'bullet', 'indent', 'script', 'align', 'direction',
+    'color', 'background', 'font', 'link', 'image', 'video', 'code-block'
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,16 +103,17 @@ const AddEssay = () => {
           
           <div className="form-group">
             <label htmlFor="content">Nội dung:</label>
-            <textarea
-              id="content"
-              name="content"
-              value={essay.content}
-              onChange={handleInputChange}
-              placeholder="Nhập nội dung bài luận"
-              className="form-control"
-              rows="15"
-              required
-            ></textarea>
+            <div className="rich-text-editor">
+              <ReactQuill
+                theme="snow"
+                value={essay.content}
+                onChange={handleContentChange}
+                modules={modules}
+                formats={formats}
+                placeholder="Nhập nội dung bài luận..."
+                style={{ minHeight: '300px' }}
+              />
+            </div>
           </div>
           
           <div className="form-actions">
