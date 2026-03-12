@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaPlus, FaEdit, FaTrash, FaSpinner, FaFolder, FaChevronRight, FaChevronDown, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSpinner, FaFolder, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import essayApi from '../../api/essayApi';
@@ -308,215 +308,131 @@ const Essay = () => {
                       )}
                     </div>
                   );
+                })}
                 
-                return (
-                  <div key={category.id} className="category-node">
+                {/* Hiển thị các bài luận không có danh mục */}
+                {filteredEssays.filter(essay => !essay.categoryId).length > 0 && (
+                  <div className="category-node">
                     <div 
                       className="category-header"
-                      onClick={() => toggleCategory(category.id)}
+                      onClick={() => toggleCategory('no-category')}
                       style={{ cursor: 'pointer', userSelect: 'none' }}
                     >
                       <div className="category-info">
                         <div className="expand-icon">
-                          {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
+                          {expandedCategories.has('no-category') ? <FaChevronDown /> : <FaChevronRight />}
                         </div>
-                        <FaFolder className={isExpanded ? 'expanded' : ''} />
+                        <FaFolder />
                         <div className="category-details">
-                          <h3>{category.name}</h3>
-                          <span className="essay-count">{categoryEssays.length} bài luận</span>
+                          <h3>Không có danh mục</h3>
+                          <span className="essay-count">{filteredEssays.filter(essay => !essay.categoryId).length} bài luận</span>
                         </div>
-                      </div>
-                      <div className="category-actions">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate('/essays/add', { state: { categoryId: category.id } });
-                          }}
-                          className="btn btn-sm btn-primary"
-                          title="Thêm bài luận vào danh mục"
-                        >
-                          <FaPlus />
-                        </button>
                       </div>
                     </div>
-                    
-                    {isExpanded && (
+                    {expandedCategories.has('no-category') && (
                       <div className="category-content">
-                        {categoryEssays.length === 0 ? (
-                          <div className="no-essays-in-category">
-                            <p>Chưa có bài luận nào trong danh mục này.</p>
-                          </div>
-                        ) : (
-                          <div className="essays-in-category">
-                            {categoryEssays.map(essay => (
-                              <div key={essay.id} className="essay-item">
-                                <div className="essay-info">
-                                  <h4>{essay.title}</h4>
-                                  <p className="essay-excerpt">
-                                    {essay.content.length > 100 ? `${essay.content.substring(0, 100)}...` : essay.content}
-                                  </p>
-                                  <span className="essay-date">
-                                    {essay.createdAt === essay.updatedAt 
-                                      ? `Tạo lúc: ${formatDate(essay.createdAt)}` 
-                                      : `Cập nhật: ${formatDate(essay.updatedAt)}`}
-                                  </span>
-                                </div>
-                                <div className="essay-actions">
-                                  <Link 
-                                    to={`/essays/edit/${essay.id}`}
-                                    className="btn-edit"
-                                    title="Chỉnh sửa"
-                                  >
-                                    <FaEdit />
-                                  </Link>
-                                  <button 
-                                    onClick={() => handleDelete(essay.id, category.id)}
-                                    className="btn-delete"
-                                    title="Xóa"
-                                  >
-                                    <FaTrash />
-                                  </button>
-                                  <Link 
-                                    to={`/essays/${essay.id}`}
-                                    className="btn-view"
-                                    title="Xem chi tiết"
-                                  >
-                                    Xem
-                                  </Link>
-                                </div>
+                        <div className="essays-in-category">
+                          {filteredEssays.filter(essay => !essay.categoryId).map(essay => (
+                            <div key={essay.id} className="essay-item">
+                              <div className="essay-info">
+                                <h4>{essay.title}</h4>
+                                <p className="essay-excerpt">
+                                  {essay.content.length > 100 ? `${essay.content.substring(0, 100)}...` : essay.content}
+                                </p>
+                                <span className="essay-date">
+                                  {essay.createdAt === essay.updatedAt 
+                                    ? `Tạo lúc: ${formatDate(essay.createdAt)}` 
+                                    : `Cập nhật: ${formatDate(essay.updatedAt)}`}
+                                </span>
                               </div>
-                            ))}
-                          </div>
-                        )}
+                              <div className="essay-actions">
+                                <Link 
+                                  to={`/essays/edit/${essay.id}`}
+                                  className="btn-edit"
+                                  title="Chỉnh sửa"
+                                >
+                                  <FaEdit />
+                                </Link>
+                                <button 
+                                  onClick={() => handleDelete(essay.id)}
+                                  className="btn-delete"
+                                  title="Xóa"
+                                >
+                                  <FaTrash />
+                                </button>
+                                <Link 
+                                  to={`/essays/${essay.id}`}
+                                  className="btn-view"
+                                  title="Xem chi tiết"
+                                >
+                                  Xem
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
-                );
-              })}
-              
-              {/* Hiển thị các bài luận không có danh mục */}
-              {filteredEssays.filter(essay => !essay.categoryId).length > 0 && (
-                <div className="category-node">
-                  <div 
-                    className="category-header"
-                    onClick={() => toggleCategory('no-category')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div className="category-info">
-                      <div className="expand-icon">
-                        {expandedCategories.has('no-category') ? <FaChevronDown /> : <FaChevronRight />}
-                      </div>
-                      <FaFolder />
-                      <div className="category-details">
-                        <h3>Không có danh mục</h3>
-                        <span className="essay-count">{filteredEssays.filter(essay => !essay.categoryId).length} bài luận</span>
-                      </div>
-                    </div>
-                  </div>
-                  {expandedCategories.has('no-category') && (
-                    <div className="category-content">
-                      <div className="essays-in-category">
-                        {filteredEssays.filter(essay => !essay.categoryId).map(essay => (
-                          <div key={essay.id} className="essay-item">
-                            <div className="essay-info">
-                              <h4>{essay.title}</h4>
-                              <p className="essay-excerpt">
-                                {essay.content.length > 100 ? `${essay.content.substring(0, 100)}...` : essay.content}
-                              </p>
-                              <span className="essay-date">
-                                {essay.createdAt === essay.updatedAt 
-                                  ? `Tạo lúc: ${formatDate(essay.createdAt)}` 
-                                  : `Cập nhật: ${formatDate(essay.updatedAt)}`}
-                              </span>
-                            </div>
-                            <div className="essay-actions">
-                              <Link 
-                                to={`/essays/edit/${essay.id}`}
-                                className="btn-edit"
-                                title="Chỉnh sửa"
-                              >
-                                <FaEdit />
-                              </Link>
-                              <button 
-                                onClick={() => handleDelete(essay.id)}
-                                className="btn-delete"
-                                title="Xóa"
-                              >
-                                <FaTrash />
-                              </button>
-                              <Link 
-                                to={`/essays/${essay.id}`}
-                                className="btn-view"
-                                title="Xem chi tiết"
-                              >
-                                Xem
-                              </Link>
-                            </div>
-                          </div>
-                        ))}
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="list-view">
+            <h2>Danh sách bài luận</h2>
+            {filteredEssays.length === 0 ? (
+              <div className="no-essays-container">
+                <p className="no-essays">Chưa có bài luận nào.</p>
+                <button onClick={handleAddNew} className="btn btn-primary">
+                  <FaPlus /> Thêm bài luận mới
+                </button>
+              </div>
+            ) : (
+              <div className="essay-cards">
+                {filteredEssays.map(essay => (
+                  <div key={essay.id} className="essay-card">
+                    <div className="essay-card-header">
+                      <h3>{essay.title}</h3>
+                      <span className="essay-category">
+                        {getCategoryName(essay.categoryId)}
+                      </span>
+                      <div className="essay-actions">
+                        <Link 
+                          to={`/essays/edit/${essay.id}`}
+                          className="btn-edit"
+                          title="Chỉnh sửa"
+                        >
+                          <FaEdit />
+                        </Link>
+                        <button 
+                          onClick={() => handleDelete(essay.id)}
+                          className="btn-delete"
+                          title="Xóa"
+                        >
+                          <FaTrash />
+                        </button>
                       </div>
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="list-view">
-          <h2>Danh sách bài luận</h2>
-          {filteredEssays.length === 0 ? (
-            <div className="no-essays-container">
-              <p className="no-essays">Chưa có bài luận nào.</p>
-              <button onClick={handleAddNew} className="btn btn-primary">
-                <FaPlus /> Thêm bài luận mới
-              </button>
-            </div>
-          ) : (
-            <div className="essay-cards">
-              {filteredEssays.map(essay => (
-                <div key={essay.id} className="essay-card">
-                  <div className="essay-card-header">
-                    <h3>{essay.title}</h3>
-                    <span className="essay-category">
-                      {getCategoryName(essay.categoryId)}
-                    </span>
-                    <div className="essay-actions">
-                      <Link 
-                        to={`/essays/edit/${essay.id}`}
-                        className="btn-edit"
-                        title="Chỉnh sửa"
-                      >
-                        <FaEdit />
+                    <div className="essay-content">
+                      <p>{essay.content.length > 150 ? `${essay.content.substring(0, 150)}...` : essay.content}</p>
+                    </div>
+                    <div className="essay-footer">
+                      <span className="essay-date">
+                        {essay.createdAt === essay.updatedAt 
+                          ? `Tạo lúc: ${formatDate(essay.createdAt)}` 
+                          : `Cập nhật: ${formatDate(essay.updatedAt)}`}
+                      </span>
+                      <Link to={`/essays/${essay.id}`} className="btn-view">
+                        Xem chi tiết
                       </Link>
-                      <button 
-                        onClick={() => handleDelete(essay.id)}
-                        className="btn-delete"
-                        title="Xóa"
-                      >
-                        <FaTrash />
-                      </button>
                     </div>
                   </div>
-                  <div className="essay-content">
-                    <p>{essay.content.length > 150 ? `${essay.content.substring(0, 150)}...` : essay.content}</p>
-                  </div>
-                  <div className="essay-footer">
-                    <span className="essay-date">
-                      {essay.createdAt === essay.updatedAt 
-                        ? `Tạo lúc: ${formatDate(essay.createdAt)}` 
-                        : `Cập nhật: ${formatDate(essay.updatedAt)}`}
-                    </span>
-                    <Link to={`/essays/${essay.id}`} className="btn-view">
-                      Xem chi tiết
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

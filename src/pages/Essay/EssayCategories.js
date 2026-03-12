@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaPlus, FaEdit, FaTrash, FaFolder, FaSpinner, FaArrowLeft, FaChevronRight, FaChevronDown, FaSearch } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaFolder, FaSpinner, FaArrowLeft, FaChevronRight, FaChevronDown } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import essayCategoryApi from '../../api/essayCategoryApi';
