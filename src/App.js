@@ -18,6 +18,9 @@ import Essay from './pages/Essay/Essay';
 import AddEssay from './pages/Essay/AddEssay';
 import EssayDetail from './pages/Essay/EssayDetail';
 import EditEssay from './pages/Essay/EditEssay';
+import EssayCategories from './pages/Essay/EssayCategories';
+import AddEssayCategory from './pages/Essay/AddEssayCategory';
+import EditEssayCategory from './pages/Essay/EditEssayCategory';
 
 function App() {
   return (
@@ -42,6 +45,11 @@ function App() {
                 <Route path="/essays/add" element={<AddEssay />} />
                 <Route path="/essays/:id" element={<EssayDetail />} />
                 <Route path="/essays/edit/:id" element={<EditEssay />} />
+                
+                {/* Essay Category Management Routes */}
+                <Route path="/essay-categories" element={<EssayCategories />} />
+                <Route path="/essay-categories/add" element={<AddEssayCategory />} />
+                <Route path="/essay-categories/edit/:id" element={<EditEssayCategory />} />
               </Routes>
             </main>
             <footer>

@@ -42,10 +42,329 @@
   margin: 0;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-right {
+  display: flex;
+  gap: 10px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 300px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.search-input:focus {
+  border-color: #28a745;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.search-input::placeholder {
+  color: #6c757d;
+}
+
 .essay-header .btn {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.view-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.btn-info:hover {
+  background-color: #138496;
+  border-color: #117a8b;
+}
+
+.btn-success {
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+/* Tree View Styles */
+.category-tree {
+  margin-top: 20px;
+}
+
+.category-node {
+  margin-bottom: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.expand-icon {
+  color: #6c757d;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-expand {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #28a745;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-expand:hover {
+  background-color: #e8f5e8;
+}
+
+.btn-expand .expanded {
+  color: #28a745;
+}
+
+.category-details h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.category-details h3:hover {
+  color: #28a745;
+}
+
+.essay-count {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-left: 10px;
+}
+
+.category-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.category-content {
+  padding: 15px 20px;
+  background-color: white;
+}
+
+.category-description {
+  color: #6c757d;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.no-essays-in-category {
+  text-align: center;
+  color: #6c757d;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px dashed #dee2e6;
+}
+
+.essays-in-category {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.essay-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background-color: #fafafa;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.essay-item:hover {
+  background-color: #f0f8ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.essay-info {
+  flex-grow: 1;
+  margin-right: 15px;
+}
+
+.essay-info h4 {
+  margin: 0 0 8px 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.essay-excerpt {
+  margin: 0 0 8px 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.essay-date {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.essay-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.no-data-container {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+}
+
+.no-data-container p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.no-categories-container {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+}
+
+.no-categories {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.essay-category {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.small {
+  font-size: 0.875rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+/* List View Styles */
+.list-view h2 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+.tree-view h2 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+.essays-content {
+  min-height: 400px;
 }
 
 .essay-container h1 {
@@ -127,13 +446,13 @@ textarea.form-control {
 
 .btn-primary {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #28a745;
+  border-color: #28a745;
 }
 
 .btn-primary:hover {
-  background-color: #0069d9;
-  border-color: #0062cc;
+  background-color: #218838;
+  border-color: #1e7e34;
 }
 
 .btn-secondary {
@@ -212,8 +531,8 @@ textarea.form-control {
 }
 
 .btn-edit:hover {
-  background-color: #e2f3ff;
-  color: #0056b3;
+  background-color: #e8f5e8;
+  color: #1e7e34;
 }
 
 .btn-delete:hover {
@@ -253,7 +572,7 @@ textarea.form-control {
 }
 
 .btn-view {
-  color: #007bff;
+  color: #28a745;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -261,7 +580,7 @@ textarea.form-control {
 }
 
 .btn-view:hover {
-  color: #0056b3;
+  color: #218838;
   text-decoration: underline;
 }
 
@@ -286,6 +605,23 @@ textarea.form-control {
   
   .essay-form {
     padding: 20px 15px;
+  }
+
+  .essay-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .search-container {
+    max-width: 100%;
+    width: 100%;
   }
 }
 

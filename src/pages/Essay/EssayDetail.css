@@ -72,13 +72,13 @@
 }
 
 .btn-edit {
-  background-color: #3182ce;
+  background-color: #28a745;
   color: white;
-  border-color: #2c5282;
+  border-color: #1e7e34;
 }
 
 .btn-edit:hover {
-  background-color: #2c5282;
+  background-color: #218838;
   transform: translateY(-2px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
