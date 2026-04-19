@@ -75,3 +75,55 @@
 .btn-secondary:hover {
   background-color: #545b62;
 }
+
+/* Auto-save status styling */
+.essay-header-with-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.auto-save-status {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.auto-saving {
+  display: flex;
+  align-items: center;
+  color: #007bff;
+  font-weight: 500;
+}
+
+.auto-saving .spinner {
+  margin-right: 0.5rem;
+  animation: spin 1s linear infinite;
+}
+
+.last-saved {
+  color: #28a745;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .essay-header-with-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .auto-save-status {
+    align-self: flex-end;
+  }
+}

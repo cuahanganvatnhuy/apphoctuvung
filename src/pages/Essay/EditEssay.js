@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +21,12 @@ const EditEssay = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+  
+  // Refs for debouncing
+  const saveTimeoutRef = useRef(null);
+  const previousEssayRef = useRef({ title: '', content: '' });
 
   useEffect(() => {
     const fetchEssay = async () => {
@@ -47,6 +53,100 @@ const EditEssay = () => {
     }
   }, [id, navigate]);
 
+  // Auto-save function
+  const autoSaveEssay = async () => {
+    console.log('Auto-save triggered');
+    console.log('Current essay:', essay);
+    console.log('Previous essay:', previousEssayRef.current);
+    
+    if (!essay.title.trim() || !essay.content.trim()) {
+      console.log('Empty content, not saving');
+      return;
+    }
+
+    // Don't save if content hasn't changed
+    if (previousEssayRef.current.title === essay.title && 
+        previousEssayRef.current.content === essay.content) {
+      console.log('No changes detected, not saving');
+      return;
+    }
+
+    console.log('Changes detected, saving...');
+    try {
+      setIsAutoSaving(true);
+      await essayApi.updateEssay(essay.id, {
+        title: essay.title.trim(),
+        content: essay.content.trim(),
+        updatedAt: new Date().toISOString()
+      });
+      
+      // Update previous essay ref
+      previousEssayRef.current = {
+        title: essay.title,
+        content: essay.content
+      };
+      
+      setLastSavedAt(new Date());
+      
+      // Show subtle auto-save notification
+      toast.success('Tài nguyên telah disimpan secara otomatis', {
+        position: 'bottom-right',
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        closeButton: false,
+        style: {
+          background: 'rgba(40, 167, 69, 0.9)',
+          fontSize: '0.85rem',
+          padding: '8px 12px',
+          borderRadius: '4px'
+        }
+      });
+      
+      console.log('Auto-save successful');
+    } catch (error) {
+      console.error('Auto-save error:', error);
+      // Don't show error toast for auto-save to avoid annoying user
+    } finally {
+      setIsAutoSaving(false);
+    }
+  };
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save (immediate save)
+    if (essay.title.trim() || essay.content.trim()) {
+      saveTimeoutRef.current = setTimeout(() => {
+        autoSaveEssay();
+      }, 0);
+    }
+
+    // Cleanup
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [essay.title, essay.content]);
+
+  // Initialize previous essay ref when essay loads (only once)
+  useEffect(() => {
+    if (!isLoading && essay.id) {
+      previousEssayRef.current = {
+        title: essay.title,
+        content: essay.content
+      };
+      console.log('Previous essay ref initialized:', previousEssayRef.current);
+    }
+  }, [isLoading, essay.id]); // Remove essay.title and essay.content from dependencies
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEssay(prev => ({
@@ -62,6 +162,7 @@ const EditEssay = () => {
     }));
   };
 
+  
   // Configure Quill editor modules
   const modules = {
     toolbar: [
@@ -78,6 +179,20 @@ const EditEssay = () => {
       ['link', 'image', 'video'],
       ['clean']
     ],
+    clipboard: {
+      matchVisual: false,
+    },
+    history: {
+      delay: 1000,
+      maxStack: 50,
+      userOnly: true
+    }
+  };
+
+  // Simple handler to reset cursor format when user selects new formatting
+  const handleSelectionChange = () => {
+    // This will be called when user clicks in the editor
+    // We'll use this to ensure the toolbar selection is respected
   };
 
   const formats = [
@@ -92,6 +207,11 @@ const EditEssay = () => {
     if (!essay.title.trim() || !essay.content.trim()) {
       toast.error('Vui lòng nhập đầy đủ tiêu đề và nội dung bài luận');
       return;
+    }
+
+    // Clear any pending auto-save
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
 
     try {
@@ -123,7 +243,21 @@ const EditEssay = () => {
 
   return (
     <div className="essay-detail-container">
-      <h1>Chỉnh sửa bài luận</h1>
+      <div className="essay-header-with-status">
+        <h1>Chỉnh sửa bài luận</h1>
+        <div className="auto-save-status">
+          {isAutoSaving && (
+            <span className="auto-saving">
+              <FaSpinner className="spinner" /> Đang tự động lưu...
+            </span>
+          )}
+          {lastSavedAt && !isAutoSaving && (
+            <span className="last-saved">
+              Đã lưu lúc: {lastSavedAt.toLocaleTimeString('vi-VN')}
+            </span>
+          )}
+        </div>
+      </div>
       
       <form onSubmit={handleSubmit} className="essay-edit-form">
         <div className="form-group">
@@ -147,9 +281,10 @@ const EditEssay = () => {
               theme="snow"
               value={essay.content}
               onChange={handleContentChange}
+              onSelectionChange={handleSelectionChange}
               modules={modules}
               formats={formats}
-              placeholder="Nhập nội dung bài luận..."
+              placeholder="Nh?p n?i dung bài lu?n..."
               style={{ minHeight: '300px' }}
               readOnly={isSubmitting}
             />
