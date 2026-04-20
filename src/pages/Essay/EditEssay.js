@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,7 +54,7 @@ const EditEssay = () => {
   }, [id, navigate]);
 
   // Auto-save function
-  const autoSaveEssay = async () => {
+  const autoSaveEssay = useCallback(async () => {
     console.log('Auto-save triggered');
     console.log('Current essay:', essay);
     console.log('Previous essay:', previousEssayRef.current);
@@ -112,7 +112,7 @@ const EditEssay = () => {
     } finally {
       setIsAutoSaving(false);
     }
-  };
+  }, [essay]);
 
   // Debounced auto-save effect
   useEffect(() => {
@@ -134,7 +134,7 @@ const EditEssay = () => {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [essay.title, essay.content]);
+  }, [essay.title, essay.content, autoSaveEssay]);
 
   // Initialize previous essay ref when essay loads (only once)
   useEffect(() => {
@@ -145,7 +145,7 @@ const EditEssay = () => {
       };
       console.log('Previous essay ref initialized:', previousEssayRef.current);
     }
-  }, [isLoading, essay.id]); // Remove essay.title and essay.content from dependencies
+  }, [isLoading, essay.id, essay.title, essay.content]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
